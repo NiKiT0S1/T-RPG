@@ -126,49 +126,62 @@ public class Game {
                         }
                         // Use an item
                         else if (battleChoice == 3) {
-                            System.out.println("--- Inventory ---");
-                            System.out.println("1. Health Potion (" + inventory[0] + ")");
-                            System.out.println("2. Strength Potion (" + inventory[1] + ")");
-                            System.out.println("3. Defense Potion (" + inventory[2] + ")");
-                            System.out.print("\nChoose an item to use: ");
+                            boolean usingItem = true;
 
-                            int itemChoice = sc.nextInt();
-                            sc.nextLine();
+                            while (usingItem) {
+                                System.out.println("\n--- Inventory ---");
+                                System.out.println("1. Health Potion (" + inventory[0] + ")");
+                                System.out.println("2. Strength Potion (" + inventory[1] + ")");
+                                System.out.println("3. Defense Potion (" + inventory[2] + ")");
+                                System.out.println("0. Back to Battle");
+                                System.out.print("\nChoose an item to use: ");
 
-                            // Use Health Potion
-                            if (itemChoice == 1 && inventory[0] > 0) {
-                                inventory[0]--;
-                                int heal = 30 + rd.nextInt(20);
-                                playerHealth += heal;
+                                int itemChoice = sc.nextInt();
+                                sc.nextLine();
 
-                                // Ensure health does not exceed max health
-                                if (playerHealth > playerMaxHealth) {
-                                    playerHealth = playerMaxHealth;
+                                // Use Health Potion
+                                if (itemChoice == 1 && inventory[0] > 0) {
+                                    inventory[0]--;
+                                    int heal = 30 + rd.nextInt(20);
+                                    playerHealth += heal;
+
+                                    // Ensure health does not exceed max health
+                                    if (playerHealth > playerMaxHealth) {
+                                        playerHealth = playerMaxHealth;
+                                    }
+
+                                    System.out.println("\nRestored " + heal + " health!");
+                                    sleep(1000);
+                                    continue;
                                 }
-
-                                System.out.println("\nRestored " + heal + " health!");
-                                sleep(1000);
+                                // Use Strength Potion
+                                else if (itemChoice == 2 && inventory[1] > 0) {
+                                    inventory[1]--;
+                                    playerStatus |= BUFFED;
+                                    System.out.println("\nYou feel stronger!");
+                                    sleep(1000);
+                                    continue;
+                                }
+                                // Use Defense Potion
+                                else if (itemChoice == 3 && inventory[2] > 0) {
+                                    inventory[2]--;
+                                    playerStatus |= DEFENDING;
+                                    System.out.println("\nYou feel more armored!");
+                                    sleep(1000);
+                                    continue;
+                                }
+                                else if (itemChoice == 0) {
+                                    usingItem = false;
+                                }
+                                // No such item
+                                else {
+                                    System.out.println("\nThere is no such item!");
+                                    sleep(1000);
+                                    continue;
+                                }
                             }
-                            // Use Strength Potion
-                            else if (itemChoice == 2 && inventory[1] > 0) {
-                                inventory[1]--;
-                                playerStatus |= BUFFED;
-                                System.out.println("\nYou feel stronger!");
-                                sleep(1000);
-                            }
-                            // Use Defense Potion
-                            else if (itemChoice == 3 && inventory[2] > 0) {
-                                inventory[2]--;
-                                playerStatus |= DEFENDING;
-                                System.out.println("\nYou feel more armored!");
-                                sleep(1000);
-                            }
-                            // No such item
-                            else {
-                                System.out.println("\nThere is no such item!");
-                                sleep(1000);
-                                continue;
-                            }
+                            // Skip enemy attack when using items - this counts as a turn
+                            continue;
                         }
                         // Flee
                         else if (battleChoice == 4) {
@@ -261,7 +274,51 @@ public class Game {
                     }
                     break;
                 }
-                case 3 -> {}
+                case 3 -> {
+                    boolean inShop = true;
+
+                    while (inShop) {
+                        System.out.println("\n--- Shop ---");
+                        System.out.println("Your Gold: " + playerGold);
+                        System.out.println("1. Health Potion (20 Gold)");
+                        System.out.println("2. Strength Potion (30 Gold)");
+                        System.out.println("3. Defense Potion (25 Gold)");
+                        System.out.println("0. Exit Shop");
+                        System.out.print("\nWhat are you buying?: ");
+
+                        int shopChoice = sc.nextInt();
+                        sc.nextLine();
+
+                        if (shopChoice >= 1 && shopChoice <= 3) {
+                            int[] prices = {20, 30, 25};
+                            int price = prices[shopChoice - 1];
+
+                            if (playerGold >= price) {
+                                playerGold -= price;
+                                inventory[shopChoice - 1]++;
+                                System.out.println("\nYou bought a " + itemNames[shopChoice - 1] + "!");
+                                sleep(1000);
+                                continue;
+                            }
+                            else if (playerGold < price) {
+                                System.out.println("\nYou don't have enough gold!");
+                                sleep(1000);
+                                continue;
+                            }
+                            else {
+                                System.out.println("\nInvalid choice. Please select a valid option.");
+                                sleep(1000);
+                                continue;
+                            }
+                        }
+                        else if (shopChoice == 0) {
+                            System.out.println("\nSee you, Stranger!");
+                            sleep(1000);
+                            inShop = false;
+                        }
+                    }
+                    break;
+                }
                 case 4 -> {}
                 case 5 -> {}
                 case 0 -> {
