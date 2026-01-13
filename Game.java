@@ -38,6 +38,9 @@ public class Game {
         inventory[1] = 0; // Strength Potions
         inventory[2] = 0; // Defense Potions
 
+        // Item names
+        String[] itemNames = {"Health Potion", "Strength Potion", "Defense Potion"};
+
         // Welcome message and character creation
         System.out.println("=== Welcome to the T-RPG Game ===");
         System.out.print("\nEnter your character's name: ");
@@ -61,7 +64,7 @@ public class Game {
             System.out.println("4. Status");
             System.out.println("5. Relax (Restore Health)");
             System.out.println("0. Exit Game");
-            System.out.print("Choose an action: ");
+            System.out.print("\nChoose an action: ");
 
             // Get player choice
             int choice = sc.nextInt();
@@ -92,7 +95,7 @@ public class Game {
                         System.out.println("2. Defend");
                         System.out.println("3. Use Item");
                         System.out.println("4. Flee");
-                        System.out.print("Your action: ");
+                        System.out.print("\nYour action: ");
 
                         int battleChoice = sc.nextInt();
                         sc.nextLine();
@@ -107,7 +110,7 @@ public class Game {
                             // Check for buffed status
                             if ((playerStatus & BUFFED) != 0) {
                                 damage = (int) (damage * 1.5);
-                                System.out.println("(Buffed Attack!)");
+                                System.out.println("\n(Buffed Attack!)");
                                 sleep(1000);
                                 playerStatus &= ~BUFFED;
                             }
@@ -118,8 +121,8 @@ public class Game {
                         else if (battleChoice == 2) {
                             // Set defending status
                             playerStatus |= DEFENDING;
-                            System.out.println("You have taken a defensive stance!");
-                            sleep(1000);
+                            System.out.println("\nYou have taken a defensive stance!");
+                            sleep(500);
                         }
                         // Use an item
                         else if (battleChoice == 3) {
@@ -127,7 +130,7 @@ public class Game {
                             System.out.println("1. Health Potion (" + inventory[0] + ")");
                             System.out.println("2. Strength Potion (" + inventory[1] + ")");
                             System.out.println("3. Defense Potion (" + inventory[2] + ")");
-                            System.out.print("Choose an item to use: ");
+                            System.out.print("\nChoose an item to use: ");
 
                             int itemChoice = sc.nextInt();
                             sc.nextLine();
@@ -143,33 +146,33 @@ public class Game {
                                     playerHealth = playerMaxHealth;
                                 }
 
-                                System.out.println("Restored " + heal + " health!");
+                                System.out.println("\nRestored " + heal + " health!");
                                 sleep(1000);
                             }
                             // Use Strength Potion
                             else if (itemChoice == 2 && inventory[1] > 0) {
                                 inventory[1]--;
                                 playerStatus |= BUFFED;
-                                System.out.println("You feel stronger!");
+                                System.out.println("\nYou feel stronger!");
                                 sleep(1000);
                             }
                             // Use Defense Potion
                             else if (itemChoice == 3 && inventory[2] > 0) {
                                 inventory[2]--;
                                 playerStatus |= DEFENDING;
-                                System.out.println("You feel more armored!");
+                                System.out.println("\nYou feel more armored!");
                                 sleep(1000);
                             }
                             // No such item
                             else {
-                                System.out.println("There is no such item!");
+                                System.out.println("\nThere is no such item!");
                                 sleep(1000);
                                 continue;
                             }
                         }
                         // Flee
                         else if (battleChoice == 4) {
-                            System.out.println("You fled from the battle...");
+                            System.out.println("\nYou fled from the battle...");
                             sleep(1000);
                             inBattle = false;
                             continue;
@@ -215,25 +218,49 @@ public class Game {
                         if ((playerStatus & DEFENDING) != 0) {
                             enemyDamage /= 2;
                             System.out.println("You defended the half of the damage!");
-                            sleep(1000);
+                            sleep(500);
                         }
 
                         // Apply damage to player
                         playerHealth -= enemyDamage;
                         System.out.println(enemyName + " dealt you " + enemyDamage + " damage!");
-                        sleep(1000);
+                        sleep(500);
 
                         // Check for poison effect
                         if ((playerStatus & POISONED) != 0) {
                             int poisonDamage = 3;
                             playerHealth -= poisonDamage;
                             System.out.println("You lose " + poisonDamage + " health from poison!");
-                            sleep(1000);
+                            sleep(500);
                         }
                     }
                     break;
                 }
-                case 2 -> {}
+                case 2 -> {
+                    // inventory management
+                    boolean inInventory = true;
+
+                    // Inventory loop
+                    while (inInventory) {
+                        System.out.println("\n--- Inventory ---");
+                        for (int i = 0; i < inventory.length; i++) {
+                            System.out.println((i + 1) + ". " + itemNames[i] + " (" + inventory[i] + ")");
+                        }
+
+                        // Return to main menu option
+                        System.out.println("\nPress 0 to return to the Main Menu.");
+                        int inventoryChoice = sc.nextInt();
+                        sc.nextLine();
+
+                        // Return to main menu
+                        if (inventoryChoice == 0) {
+                            inInventory = false;
+                            break;
+                        }
+
+                    }
+                    break;
+                }
                 case 3 -> {}
                 case 4 -> {}
                 case 5 -> {}
