@@ -111,7 +111,7 @@ public class Game {
                             if ((playerStatus & BUFFED) != 0) {
                                 damage = (int) (damage * 1.5);
                                 System.out.println("\n(Buffed Attack!)");
-                                sleep(1000);
+                                sleep(500);
                                 playerStatus &= ~BUFFED;
                             }
                             // Apply damage to enemy
@@ -319,8 +319,58 @@ public class Game {
                     }
                     break;
                 }
-                case 4 -> {}
-                case 5 -> {}
+                case 4 -> {
+                    boolean inStatus = true;
+
+                    // Status display loop
+                    while (inStatus) {
+                        System.out.println("\n--- Status ---");
+                        System.out.println("Name: " + playerName);
+                        System.out.println("Level: " + playerLevel);
+                        System.out.println("Health: " + playerHealth + "/" + playerMaxHealth);
+                        System.out.println("Attack: " + playerAttack);
+                        System.out.println("XP: " + playerExp + "/" + (playerLevel * 100));
+                        System.out.println("Gold: " + playerGold);
+                        System.out.println("\nStatus Effects:");
+                        if ((playerStatus & POISONED) != 0) {
+                            System.out.println("[Poisoned]");
+                        }
+                        if ((playerStatus & BUFFED) != 0) {
+                            System.out.println("[Buffed]");
+                        }
+                        if ((playerStatus & DEFENDING) != 0) {
+                            System.out.println("[Defending]");
+                        }
+                        if (playerStatus == 0) {
+                            System.out.println("No active status effects.");
+                        }
+
+                        // Return to main menu option
+                        System.out.println("\nPress 0 to return to the Main Menu.");
+                        int statusChoice = sc.nextInt();
+                        sc.nextLine();
+                        if (statusChoice == 0) {
+                            inStatus = false;
+                        }
+                    }
+                    break;
+                }
+                case 5 -> {
+                    // Relax and restore health
+                    int restoredHealth = (playerMaxHealth - playerHealth) / 2;
+                    playerHealth += restoredHealth;
+
+                    if (playerHealth >= playerMaxHealth) {
+                        playerHealth = playerMaxHealth;
+                        System.out.println("\nYou are fully healed!");
+                        sleep(1000);
+                        break;
+                    }
+
+                    System.out.println("\nYou relax and restore " + restoredHealth + " health.");
+                    sleep(1000);
+                    break;
+                }
                 case 0 -> {
                     // Exit game
                     gameRunning = false;
@@ -346,8 +396,25 @@ public class Game {
 
             sleep(3000);
 
-            System.out.println("\nThank you for playing, " + playerName + "! Goodbye!");
-            sleep(1000);
+            System.out.print("\nDo you want to play again? (Y/N): ");
+
+            char exitChoice = sc.next().toUpperCase().charAt(0);
+            sc.nextLine();
+
+            if (exitChoice == 'Y') {
+                System.out.println("\nLet's try again, " + playerName + "!");
+                sleep(1000);
+                main(null);
+            }
+            else if (exitChoice == 'N') {
+                System.out.println("\nThank you for playing, " + playerName + "! Goodbye!");
+                sleep(1000);
+            }
+            else {
+                System.out.println("\nInvalid choice. Exiting game.");
+                System.out.println("\nThank you for playing, " + playerName + "! Goodbye!");
+                sleep(1000);
+            }
         }
 
         sc.close();
